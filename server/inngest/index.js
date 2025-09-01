@@ -1,5 +1,6 @@
 import { Inngest } from "inngest";
 import User from "../models/User.js";
+import connectDB from "../configs/db.js";
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "pingy-app" });
@@ -9,8 +10,10 @@ const syncUserCreation = inngest.createFunction(
     {id: 'sync-user-from-clerk'},
     {event: 'clerk/user.created'},
     async ({event}) => {
+        await connectDB();
+
         const {id, first_name, last_name, email_addresses, image_url} = event.data
-        let username = email_addresses[0].email_addresses.split('@')[0]
+        let username = email_addresses[0].email_address.split('@')[0]
 
         //Check availability of username
         const user = await User.findOne({username})
@@ -52,7 +55,7 @@ const syncUserDeletion = inngest.createFunction(
     { event: 'clerk/user.deleted' },
     async ({ event }) => {
         const { id } = event.data
-        await User.findOneAndDelete(id)        
+        await User.findByIdAndDelete(id)        
     }
 )
 
