@@ -11,11 +11,7 @@ const PostCard = ({post}) => {
     const currentUser = dummyUserData
 
     const handleLike = async () => {
-        if (Likes.includes(currentUser._id)) {  
-            setLikes(Likes.filter(id => id !== currentUser._id));
-        } else {
-            setLikes([...Likes, currentUser._id]); 
-        }
+        
     }  
     
     const navigate = useNavigate()
