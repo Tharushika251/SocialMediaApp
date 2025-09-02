@@ -61,60 +61,60 @@ const syncUserDeletion = inngest.createFunction(
     }
 )
 
-// //Inngest Function to send reminder when a new connection request is added - inngest scheduling
-// //Send an email instantly when a connection requested
-// const sendNewConnectionRequestReminder = inngest.createFunction(
-//     { id: "send-new-connection-reminder" },
-//     { event: "app/connection-request" },
-//     async ({event, step}) => {
-//         const {connectionId} = event.data;
+//Inngest Function to send reminder when a new connection request is added - inngest scheduling
+//Send an email instantly when a connection requested
+const sendNewConnectionRequestReminder = inngest.createFunction(
+    { id: "send-new-connection-reminder" },
+    { event: "app/connection-request" },
+    async ({event, step}) => {
+        const {connectionId} = event.data;
 
-//         await step.run('send-connection-request-email', async () => {
-//             const connection =await Connection.findById(connectionId).populate('from_user_id to_user_id')
-//             const subject = `👋 New Connection Request`
-//             const body = `<div style="font-family:Arial, sans-serif; padding:20px;">
-//                 <h2>Hi ${connection.to_user_id.full_name}</h2>
-//                 <p>You have a new connection request from ${connection.to_user_id.full_name} - ${connection.to_user_id.username}</p>
-//                 <p>Click <a href="${process.env.FRONTEND_URL}/connections" style="color:#10b981;">here</a> to accept or reject the request</p>
-//                 <br/>
-//                 <p>Thanks,<br/>Pingy - Stay Connected</p>
-//             </div>`;
+        await step.run('send-connection-request-email', async () => {
+            const connection =await Connection.findById(connectionId).populate('from_user_id to_user_id')
+            const subject = `👋 New Connection Request`
+            const body = `<div style="font-family:Arial, sans-serif; padding:20px;">
+                <h2>Hi ${connection.to_user_id.full_name}</h2>
+                <p>You have a new connection request from ${connection.to_user_id.full_name} - ${connection.to_user_id.username}</p>
+                <p>Click <a href="${process.env.FRONTEND_URL}/connections" style="color:#10b981;">here</a> to accept or reject the request</p>
+                <br/>
+                <p>Thanks,<br/>Pingy - Stay Connected</p>
+            </div>`;
 
-//             await sendEmail({
-//                 to: connection.to_user_id.email,
-//                 subject,
-//                 body
-//             })
-//         })
-//         //Send an email after 24 hours if connection not accepted
-//         const in24Hours = new Date(Date.now() + 24*60*60*1000)
-//         await step.sleepUntil("wait-for-24-hours", in24Hours);
-//         await step.run('send-connection-request-reminder', async () => {
-//             const connection = await Connection.findById(connectionId).populate('from_user_id to_user_id');
+            await sendEmail({
+                to: connection.to_user_id.email,
+                subject,
+                body
+            })
+        })
+        //Send an email after 24 hours if connection not accepted
+        const in24Hours = new Date(Date.now() + 24*60*60*1000)
+        await step.sleepUntil("wait-for-24-hours", in24Hours);
+        await step.run('send-connection-request-reminder', async () => {
+            const connection = await Connection.findById(connectionId).populate('from_user_id to_user_id');
 
-//             if(connection.status === "accepted"){
-//                 return {message: "Already accepted"}
-//             }
+            if(connection.status === "accepted"){
+                return {message: "Already accepted"}
+            }
 
-//             const subject = `👋 New Connection Request`
-//             const body = `<div style="font-family:Arial, sans-serif; padding:20px;">
-//                 <h2>Hi ${connection.to_user_id.full_name}</h2>
-//                 <p>You have a new connection request from ${connection.to_user_id.full_name} - ${connection.to_user_id.username}</p>
-//                 <p>Click <a href="${process.env.FRONTEND_URL}/connections" style="color:#10b981;">here</a> to accept or reject the request</p>
-//                 <br/>
-//                 <p>Thanks,<br/>Pingy - Stay Connected</p>
-//             </div>`;
+            const subject = `👋 New Connection Request`
+            const body = `<div style="font-family:Arial, sans-serif; padding:20px;">
+                <h2>Hi ${connection.to_user_id.full_name}</h2>
+                <p>You have a new connection request from ${connection.to_user_id.full_name} - ${connection.to_user_id.username}</p>
+                <p>Click <a href="${process.env.FRONTEND_URL}/connections" style="color:#10b981;">here</a> to accept or reject the request</p>
+                <br/>
+                <p>Thanks,<br/>Pingy - Stay Connected</p>
+            </div>`;
 
-//             await sendEmail({
-//                 to: connection.to_user_id.email,
-//                 subject,
-//                 body
-//             })
+            await sendEmail({
+                to: connection.to_user_id.email,
+                subject,
+                body
+            })
 
-//             return {message: "Reminder Sent"}
-//         })
-//     }
-// )
+            return {message: "Reminder Sent"}
+        })
+    }
+)
 
 // Create an empty array where we'll export future Inngest functions
 export const functions = [
